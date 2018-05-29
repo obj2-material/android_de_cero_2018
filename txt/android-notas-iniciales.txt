@@ -95,10 +95,43 @@ Para eso Run -> Run app. Les va a preguntar en dónde quieren correr su app. Yo 
 
 Etapa 2: agregamos botones - Preparación: los textos salen de un Controller
 ---------------------------------------------------------------------------
+Todavía no agregamos nada de interactividad. Lo único que hacemos es que los dos String sean provistos por un Controller, en lugar de ser fijos.
+Vamos a usar la funcionalidad de Data Binding provista por Android, ver
+    https://developer.android.com/topic/libraries/data-binding/
+y en particular
+    https://developer.android.com/topic/libraries/data-binding/expressions
 
+1. 
+Se agrega la clase MenuInicialController, que simplemente tiene los dos atributos y sus getter.
+Para que funcione como un Controller, hay que hacer dos cosas
+- que extienda de android.databinding.BaseObservable
+- poner la anotación @Bindable a los getter
 
-https://developer.android.com/topic/libraries/data-binding/
-https://developer.android.com/topic/libraries/data-binding/expressions
+2.
+Varios cambios en activity_menu_inicial.xml
+- se crea un nuevo elemento inicial layout, que se lleva los atributos xmlns:android, xmlns:app y xmlns:tools.
+  El elemento android.support.constraint.ConstraintLayout ahora queda adentro de layout, y tiene el resto de los atributos.
+- entre el layout y el android.support.constraint.ConstraintLayout agregamos el elemento data, que incluye las referencias a objetos de los que se van a obtener valores. 
+  Cada referencia tiene un nombre de variable y un tipo.
+  En este caso, agregamos nuestro controller como referencia desde el layout. 
+- para los views que van a tomar el android:text (u otro atributo) de una referencia, se cambia el String fijo por 
+  "@{objeto.propiedad}". La misma onda que Wicket o Arena.
+  Para que se vea algo en el preview, el String que teníamos en android:text podemos pasarlo a tools:text.
+  P.ej. donde antes decía
+            android:text="Hola gente"
+  ahora va a decir  
+            android:text="@{controller.titulo}"
+            tools:text="Hola gente"
+Atenti: de paso, en este archivo se cambió también el constraint del texto para que la posición sea relativa al título. Ver los comentarios.
+
+3.
+En MenuInicial.onCreate ponemos el código que se ve. 
+El binding es el objeto que maneja las referencias definidas en el layout. 
+La clase del binding, en este caso ActivityMenuInicialBinding, se crea automáticamente.
+El nombre se arma a partir del nombre del archivo de layout, en este caso activity_menu_inicial.
+La creación es copy-paste, el setContentView que se hacía a this ahora va a parar al binding.
+
+Después de crear el objeto binding, hay que setearle cada una de las referencias que se definió en el layout. Como definimos una referencia llamada controller, entonces a este objeto tenemos que hacerle setController.
 
 
 

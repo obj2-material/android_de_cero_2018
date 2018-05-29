@@ -20,11 +20,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="80dp"
             android:text="@{controller.titulo}"
+            tools:text="Hola gente"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Hola gente"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/texto"
@@ -32,11 +32,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:text="@{controller.texto}"
+            tools:text="este texto aparece más chico"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/titulo"
-            tools:text="este texto aparece más chico"/>
+            app:layout_constraintTop_toBottomOf="@id/titulo" />
         <!-- con este seteo de
              se logra que el segundo texto quede "enganchado"
              con el primero -->
