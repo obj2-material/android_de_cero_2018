@@ -93,6 +93,15 @@ Para eso Run -> Run app. Les va a preguntar en dónde quieren correr su app. Yo 
 
 
 
+Etapa 2: agregamos botones - Preparación: los textos salen de un Controller
+---------------------------------------------------------------------------
+
+
+https://developer.android.com/topic/libraries/data-binding/
+https://developer.android.com/topic/libraries/data-binding/expressions
+
+
+
 Qué archivos hay en un proyecto Android.
 ----------------------------------------
 app/manifests/AndroidManifest.xml
@@ -113,6 +122,19 @@ donde se pueden definir constantes que se usen p.ej. en app/res/layout
 
 
 Keyboard shortcuts Android Studio
+---------------------------------
 - Alt-Ins new
 - Ctrl-B saltar a definición.
 - Ctrl-N buscar clase.
+
+
+
+Más comentarios sobre Android Studio
+------------------------------------
+Si entiendo bien lo que dice en 
+    https://developer.android.com/training/constraint-layout/
+se puede manejar el ConstraintLayout desde el preview, sin necesidad de tocar el XML.
+Probé, no me salió, y se me tildó mal el Android Studio.
+Ergo, toco en el XML y veo cómo queda en el Preview.
+
+
