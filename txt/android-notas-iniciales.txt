@@ -1,0 +1,118 @@
+Android
+
+
+Recursos.
+---------
+https://developer.android.com/guide/topics/ui/look-and-feel/themes
+Acerca de estilos en Android.
+
+
+
+Notas previas. 
+--------------
+Los fuentes de una app Android incluyen muchísimo "boilerplate": código que tiene que estar para que la app funcione, aparte de lo que se quiera hacer. Este código es, al menos en parte, generado. Hay que convivir con esto.
+
+Las tareas de Gradle taaaaardan. Tener paciencia.
+
+
+
+Etapa 1: tener una pantalla que muestra dos Strings fijos.
+---------------------------------------------------------
+1.
+Se crea proyecto
+- Primer pantalla: nombre del proyecto, en qué carpeta van los fuentes, nombre del package Java (propone un default de nombre de package, no hace falta editarlo).
+  En el ejemplo el nombre es "Prueba 2018", y se dejó el nombre del package por defecto, que es com.example.carlos.pruebas2018.
+- Nivel de compatibilidad: yo elegí SDK 4.4 KitKat
+- con una Empty Activity, "Generate Layout File" y "Backwards Compatibility (AppCompat)" habilitados.
+  En este ejemplo, como nombre a esta activity le puse "MenuInicial"
+- esperar que Gradle haga todo lo que quiera (tal vez requiera Internet).
+- listo.
+
+2.
+Se agregan librerías y herramientas que se van a usar.
+En build.gradle de module:app, 
+- dentro de android
+  Cambiar compileSdkVersion y targetSdkVersion según el dispositivo virtual que hayan configurado, o el celu donde vayan a probar. No se puede compilar para una versión superior a donde se va a probar, sí para una inferior.
+  Si cambian esto, dentro de dependencies les va a pedir que cambien la línea
+      implementation 'com.android.support:appcompat-v7:27.1.1'
+  por la que corresponda a la versión que pusieron. Marca un error en esa línea. 
+  A mí (28/05/2018), me alcanzó con clickear la lamparita que aparece en color rojo (si aparece en amarillo, moverse con el cursor hata que aparezca la lamparita en rojo) y elegir la versión "Replace with ..." con la versión que puse en compileSdkVersion.
+- dentro de android, agregar
+    dataBinding {
+        enabled true
+    }
+- dentro de dependencies, agregar
+    implementation 'com.android.volley:volley:1.0.0'
+    implementation "commons-io:commons-io:2.6"
+
+IMPORTANTE
+Al tocar un build.gradle, dice "Gradle files have changed since last project sync. A project sync may be necessary for the IDE to work properly."
+Cuando terminan de tocar, acepten el "Sync now".
+Si entiendo bien, eso hace lo mismo que la opción de menú File -> Sync Project with Gradle Files.
+Si en algún momento aparecen errores inesperados relacionados con librerías, p.ej. que no encuentra una clase u otro recurso de una librería que se está incluyendo, darle a esta opción de menú para que se acomode el IDE.
+
+3.
+El proyecto nace con una clase, en el package definido en el punto 1 (recordemos que en el ejemplo es com.example.carlos.pruebas2018). Este es el código.
+
+    package com.example.carlos.pruebas2018;
+
+    import android.support.v7.app.AppCompatActivity;
+    import android.os.Bundle;
+
+    public class MenuInicial extends AppCompatActivity {
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_menu_inicial);
+        }
+    }
+
+La especificación de qué elementos tiene la pantalla, y su layout, está en el "R.layout.activity_menu_inicial". Si se paran ahí y pulsan Ctrl-B (para ir a la definición), verán que salta a res/layout/activity_menu_inicial.xml. Supongo que mostrará un XML y a la derecha un diseño de pantalla de celu.
+En este archivo definimos, en XML, los componentes de cada pantalla. Después veremos cómo obtener referencias a estos componentes (p.ej. para modificarles el contenido o algún atributo) desde las clases Java.
+
+Este XML nace con un solo componente, que es un TextView centrado en la pantalla. Para que quede centrado verticalmente pero a 100px del top, le borré la linea que decía
+      app:layout_constraintBottom_toBottomOf="parent"
+y agregué esta
+      android:layout_marginTop="100dp"
+
+El android:text es el texto, el android:textAppearance es el estilo.
+Para cambiar el estilo, pueden borrar el ".Headline" del final y darle Ctrl-Space sobre "@style/TextAppearance.AppCompat", ahí van a aparecer un montón de opciones.
+
+Para agregar otro cuadro de texto, tiene que haber otro elemento TextView dentro del XML. Prueben copypasteando, y después cambiando ubicación, texto y estilo del segundo TextView.
+
+Nota: 
+R es una clase (en rigor, un amasijo de constantes definido como clase) que Android Studio (o Gradle, o alguien) genera automáticamente, pero que *no* se incluye en el proyecto. Si buscan (Ctrl-N) una clase llamada R, van a encontrar varias, una está dentro del proyecto. Si la abren, se van a dar cuenta que está en la carpeta build, no en la carpeta app. 
+No sé si uno termina usando las constantes de R en algún momento, o si son solamente para que el código que genera Android pueda referenciar a los recursos que necesita.
+
+4.
+Ya podemos ejecutar nuestra aplicación.
+Para eso Run -> Run app. Les va a preguntar en dónde quieren correr su app. Yo conozco dos opciones
+- virtual device, que se instalan desde Tools -> AVD Manager. OJO que instalar un nuevo virtual device son más Gb que se descargan por Internet, ergo creo que no es para hacer en clase.
+- un celu que tengan conectado via USB en la compu. Yo lo probé el año pasado y anduvo. Ahora tengo un celu bastante básico, no he probado.
+
+
+
+Qué archivos hay en un proyecto Android.
+----------------------------------------
+app/manifests/AndroidManifest.xml
+ahí se declara qué actividades tiene el proyecto, y se indica cuál es la inicial.
+
+app/java
+código
+
+app/res
+recursos de distintos tipos asociados con la aplicación
+
+app/res/layout
+diseño de pantallas, es el que al menos yo más usé dentro de app/res
+
+app/res/values
+donde se pueden definir constantes que se usen p.ej. en app/res/layout
+
+
+
+Keyboard shortcuts Android Studio
+- Alt-Ins new
+- Ctrl-B saltar a definición.
+- Ctrl-N buscar clase.
