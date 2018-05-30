@@ -3,9 +3,11 @@ package com.example.carlos.pruebas2018;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
+import java.util.Calendar;
+
 public class MenuInicialController extends BaseObservable {
     private String titulo = "Hola a todos";
-    private String texto = "Estamos en el año 2018";
+    private String texto = "Estamos en el año " + Calendar.getInstance().get(Calendar.YEAR);
 
     @Bindable
     public String getTitulo() { return this.titulo; }
