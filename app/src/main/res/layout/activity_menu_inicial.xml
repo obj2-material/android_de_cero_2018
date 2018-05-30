@@ -20,11 +20,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="80dp"
             android:text="@{controller.titulo}"
-            tools:text="Hola gente"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Hola gente" />
 
         <TextView
             android:id="@+id/texto"
@@ -32,23 +32,34 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:text="@{controller.texto}"
-            tools:text="este texto aparece más chico"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textSize="@{controller.tamanioLetra}"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/titulo" />
+            app:layout_constraintTop_toBottomOf="@id/titulo"
+            tools:text="este texto aparece más chico" />
         <!-- con este seteo de
              se logra que el segundo texto quede "enganchado"
              con el primero -->
 
         <Button
+            android:id="@+id/ubicame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ubicame"
             android:onClick="@{() -> controller.mostrarFechaDeHoy()}"
+            android:text="@string/ubicame"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/texto"/>
+            app:layout_constraintTop_toBottomOf="@id/texto" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> controller.aumentarLetra()}"
+            android:text="@string/no_veo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ubicame" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>
