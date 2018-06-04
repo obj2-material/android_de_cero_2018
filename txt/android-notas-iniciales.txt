@@ -8,7 +8,7 @@ Acerca de estilos en Android.
 
 
 
-Notas previas. 
+Notas previas.
 --------------
 Los fuentes de una app Android incluyen muchísimo "boilerplate": código que tiene que estar para que la app funcione, aparte de lo que se quiera hacer. Este código es, al menos en parte, generado. Hay que convivir con esto.
 
@@ -30,12 +30,12 @@ Se crea proyecto
 
 2.
 Se agregan librerías y herramientas que se van a usar.
-En build.gradle de module:app, 
+En build.gradle de module:app,
 - dentro de android
   Cambiar compileSdkVersion y targetSdkVersion según el dispositivo virtual que hayan configurado, o el celu donde vayan a probar. No se puede compilar para una versión superior a donde se va a probar, sí para una inferior.
   Si cambian esto, dentro de dependencies les va a pedir que cambien la línea
       implementation 'com.android.support:appcompat-v7:27.1.1'
-  por la que corresponda a la versión que pusieron. Marca un error en esa línea. 
+  por la que corresponda a la versión que pusieron. Marca un error en esa línea.
   A mí (28/05/2018), me alcanzó con clickear la lamparita que aparece en color rojo (si aparece en amarillo, moverse con el cursor hata que aparezca la lamparita en rojo) y elegir la versión "Replace with ..." con la versión que puse en compileSdkVersion.
 - dentro de android, agregar
     dataBinding {
@@ -81,8 +81,8 @@ Para cambiar el estilo, pueden borrar el ".Headline" del final y darle Ctrl-Spac
 
 Para agregar otro cuadro de texto, tiene que haber otro elemento TextView dentro del XML. Prueben copypasteando, y después cambiando ubicación, texto y estilo del segundo TextView.
 
-Nota: 
-R es una clase (en rigor, un amasijo de constantes definido como clase) que Android Studio (o Gradle, o alguien) genera automáticamente, pero que *no* se incluye en el proyecto. Si buscan (Ctrl-N) una clase llamada R, van a encontrar varias, una está dentro del proyecto. Si la abren, se van a dar cuenta que está en la carpeta build, no en la carpeta app. 
+Nota:
+R es una clase (en rigor, un amasijo de constantes definido como clase) que Android Studio (o Gradle, o alguien) genera automáticamente, pero que *no* se incluye en el proyecto. Si buscan (Ctrl-N) una clase llamada R, van a encontrar varias, una está dentro del proyecto. Si la abren, se van a dar cuenta que está en la carpeta build, no en la carpeta app.
 No sé si uno termina usando las constantes de R en algún momento, o si son solamente para que el código que genera Android pueda referenciar a los recursos que necesita.
 
 4.
@@ -101,7 +101,7 @@ Vamos a usar la funcionalidad de Data Binding provista por Android, ver
 y en particular
     https://developer.android.com/topic/libraries/data-binding/expressions
 
-1. 
+1.
 Se agrega la clase MenuInicialController, que simplemente tiene los dos atributos y sus getter.
 Para que funcione como un Controller, hay que hacer dos cosas
 - que extienda de android.databinding.BaseObservable
@@ -111,27 +111,206 @@ Para que funcione como un Controller, hay que hacer dos cosas
 Varios cambios en activity_menu_inicial.xml
 - se crea un nuevo elemento inicial layout, que se lleva los atributos xmlns:android, xmlns:app y xmlns:tools.
   El elemento android.support.constraint.ConstraintLayout ahora queda adentro de layout, y tiene el resto de los atributos.
-- entre el layout y el android.support.constraint.ConstraintLayout agregamos el elemento data, que incluye las referencias a objetos de los que se van a obtener valores. 
+- entre el layout y el android.support.constraint.ConstraintLayout agregamos el elemento data, que incluye las referencias a objetos de los que se van a obtener valores.
   Cada referencia tiene un nombre de variable y un tipo.
-  En este caso, agregamos nuestro controller como referencia desde el layout. 
-- para los views que van a tomar el android:text (u otro atributo) de una referencia, se cambia el String fijo por 
+  En este caso, agregamos nuestro controller como referencia desde el layout.
+- para los views que van a tomar el android:text (u otro atributo) de una referencia, se cambia el String fijo por
   "@{objeto.propiedad}". La misma onda que Wicket o Arena.
   Para que se vea algo en el preview, el String que teníamos en android:text podemos pasarlo a tools:text.
   P.ej. donde antes decía
             android:text="Hola gente"
-  ahora va a decir  
+  ahora va a decir
             android:text="@{controller.titulo}"
             tools:text="Hola gente"
 Atenti: de paso, en este archivo se cambió también el constraint del texto para que la posición sea relativa al título. Ver los comentarios.
 
 3.
-En MenuInicial.onCreate ponemos el código que se ve. 
-El binding es el objeto que maneja las referencias definidas en el layout. 
+En MenuInicial.onCreate ponemos el código que se ve.
+El binding es el objeto que maneja las referencias definidas en el layout.
 La clase del binding, en este caso ActivityMenuInicialBinding, se crea automáticamente.
 El nombre se arma a partir del nombre del archivo de layout, en este caso activity_menu_inicial.
 La creación es copy-paste, el setContentView que se hacía a this ahora va a parar al binding.
 
 Después de crear el objeto binding, hay que setearle cada una de las referencias que se definió en el layout. Como definimos una referencia llamada controller, entonces a este objeto tenemos que hacerle setController.
+
+
+
+Etapa 3: agregamos botones
+---------------------------------------------------------------------------
+
+1.
+Lo primero que vamos a hacer es modificar el texto para que el año lo calcule dinámicamente, solo a los efectos de que se vea el poder de hacer las cosas de manera programática.
+
+Lamentablemente, la implementación de Java 8 que usa Android no trae la nueva API de fechas. Afortunadamente, la comunidad siempre está para resolver lo que las corporaciones hacen a medias, y solo basta con agregar una biblioteca a nuestro proyecto para tener la famosa API. Esto se hace pegando lo siguiente en el build.gradle *que está dentro de la carpeta app*:
+
+implementation 'com.jakewharton.threetenabp:threetenabp:1.1.0'
+
+Solo hay que tener cuidado con una cosa: cuando usemos alguna de las clases de fecha, el Idea nos va a sugerir dos imports posibles, el de Java (que empieza con java.util) y el de la biblioteca que bajamos (que empieza con org.threeten.bp). Tenemos que elegir el último, ya que el primero solo está disponible para la última versión de Android.
+
+OJO hay que inicializar la librería en el onCreate de la Application (así es la vida).
+
+2.
+Ahora sí, agregamos el botón. Lo que vamos a hacer es que cuando se pulse cambie el texto por la fecha de hoy. Para eso, vamos a crear un método que haga justamente eso, e invocarlo desde el botón:
+
+// En el controller
+public void mostrarFechaDeHoy() {
+    // Importante usar el setter y no pegarle al atributo derecho. Más adelante veremos por qué.
+    this.setTexto("Hoy es " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+}
+
+// En la vista
+<Button
+    android:id="@+id/ubicame"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:onClick="@{() -> controller.mostrarFechaDeHoy()}" ---> esta es la línea que importa
+    android:text="@string/ubicame"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/texto" />
+
+Probamos el botón y, oh sorpresa, no pasa nada. La razón es que Android no se aviva automáticamente de que el valor del atributo cambió, y entonces nuestra vista no cambia en nada. Para que sí se avive, tenemos que agregar al setter una línea que indica justamente eso, qué atributo cambió:
+
+public void setTexto(String texto) {
+    this.texto = texto;
+    this.notifyPropertyChanged(BR.texto); // acá está la magia
+}
+
+El BR cumple una función similar al R, pero en este caso se acumulan las cosas que hemos usado como binding en nuestras vistas.
+
+
+
+Etapa 4: también se puede cambiar el estilo
+-------------------------------------------
+
+1.
+Hemos probado con el texto, pero ¿será posible modificar otros atributos programáticamente?
+
+La respuesta es que sí, se pueden definir atributos (lo que en HTML sería el CSS) de los componentes visuales Android. Algunos ya se ven, p.ej. android:layout_width, android:layout_height, android:layout_marginTop, android:textAppearance.
+Notar de paso que el contenido de un componente también se define mediante un atributo, el android:text.
+
+Solo hay que leer la documentación (y -acota Carlos- tener mucha paciencia) para saber qué tipo tienen estos atributos (que no siempre son los que suponemos, a veces usan tipos especiales de Android) y repetir lo que ya vimos antes: 
+- hacer un atributo en el controller, 
+- agregarle la annotation al getter, 
+- agregarle la línea mágica al setter, y
+- usar la nueva propiedad en la vista.
+
+Si quiero que el valor del atributo cambie como resultado de un evento, tengo que definir la acción que va a controlar el evento.
+
+
+Veamos un ejemplo, haciendo un botón que aumente la letra cada vez que se lo aprete.
+El atributo se llama android:textSize.
+
+// En el controller
+private int tamanioLetra = 50;
+
+@Bindable
+public int getTamanioLetra() {
+    return tamanioLetra;
+}
+
+public void setTamanioLetra(int tamanioLetra) {
+    this.tamanioLetra = tamanioLetra;
+    this.notifyPropertyChanged(BR.tamanioLetra);
+}
+
+// acción para la acción de pulsado del botón "No se ve"
+public void aumentarLetra() {
+    this.setTamanioLetra(this.tamanioLetra + 5);
+}
+
+// En la vista
+<TextView
+    android:id="@+id/texto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    android:text="@{controller.texto}"
+    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+    android:textSize="@{controller.tamanioLetra}"  ----> esta es la línea que importa
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/titulo"
+    tools:text="este texto aparece más chico" />
+
+<Button
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:onClick="@{() -> controller.aumentarLetra()}"
+    android:text="@string/no_veo"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/ubicame" />
+
+----------------------------
+
+Hasta acá todo fácil. 
+Pero ¡atenti! si lo que queremos cambiar es un color, se complica, porque hay que hacer una conversión (no entiendo por qué).
+Hay algunas "referencias a color" definidas en el archivo res/values/colors.xml. Se acceden mediante @color/xxx desde los XML, R.color.xxx en el Java. Notar que en Java se manejan como int, no como String.
+Peeeero estas "referencias a color" no son los colores posta. Por si esto fuera poco, para obtener el color posta a partir de la referencia debe intervenir el "contexto" donde está corriendo la Activity, que no sé bien qué es, pero se le puede pedir a las Activity mediante getBaseContext().
+Entooonces el Container tiene que conocer, o bien al contexto, o bien a la Activity. Ponele lo segundo: 
+        controller = new MenuInicialController(this);
+
+Así las cosas, para pasar de "referencia a color" a color hay que poner esta cosa horrible en el container:
+  ContextCompat.getColor(this.getActivity().getBaseContext(), ... la referencia al color ...)
+
+Lo de "ContextCompat" es porque estamos bancando una versión de API baja (la 19), cuya definición de Context parece estar deprecada o algo así.
+
+Para saber más sobre colores en Android:
+http://android4beginners.com/2013/06/appendix-b-everything-about-colors-in-android/
+
+
+
+Etapa 5: layouts anidados
+-------------------------
+Síiiii se pueden anidar layouts en la definición de una pantalla Android. 
+
+Un caso fácil: queremos una botonera horizontal, y además centrada. 
+
+Alcanza con incluir, dentro del ConstraintLayout, un LinearLayout, algo así:
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MenuInicial">
+
+        ... otros componentes, el último tiene esto
+                android:id="@+id/ubicame"
+        ...
+
+        <LinearLayout
+            android:orientation="horizontal"   
+            android:gravity="center_horizontal"     
+            android:layout_width="match_parent"     
+            android:layout_height="wrap_content"    
+            app:layout_constraintTop_toBottomOf="@+id/ubicame"
+            android:layout_marginTop="10dp">
+
+            ... los botones ...
+
+        </LinearLayout>
+
+        ... componentes que vayan debajo de la botonera ...
+
+    </android.support.constraint.ConstraintLayout>
+
+Comentarios sobre cada atributo del LinearLayout
+    android:orientation="horizontal"   
+        para dónde se despliega lo que pongamos adentro, opciones "horizontal" o "vertical"
+    android:gravity="center_horizontal"     
+        lo que esté adentro se va a acomodar centrado
+    android:layout_width="match_parent"     
+        toma todo el ancho del componente parent, en este caso toda la pantalla
+    android:layout_height="wrap_content"    
+        toma exactamente el alto necesario para que entre lo que pongamos adentro
+    app:layout_constraintTop_toBottomOf="@+id/ubicame"
+        que se ubique abajo del componente con ese id
+    android:layout_marginTop="10dp"
+        una pequeña separación
+
+
+Ver:
+https://developer.android.com/reference/android/widget/LinearLayout
+http://www.learn-android-easily.com/2013/05/nested-linear-layout-in-android.html
 
 
 
@@ -162,12 +341,23 @@ Keyboard shortcuts Android Studio
 
 
 
+Más comentarios sobre Android
+-----------------------------
+Existe una cosa que es la Activity y otra que es el Context. 
+Algunas cosas hay que pedírselas al Context.
+El context se puede obtener a partir de la activity: act.getBaseContext(). No sé por qué "base", tal vez puedan definirse distintos Context para la misma Activity, no tengo idea.
+
+Aparte de Activity y Context hay Application. Ni idea c'omo se usa / en qué interviene.
+
+
+
 Más comentarios sobre Android Studio
 ------------------------------------
-Si entiendo bien lo que dice en 
+Si entiendo bien lo que dice en
     https://developer.android.com/training/constraint-layout/
 se puede manejar el ConstraintLayout desde el preview, sin necesidad de tocar el XML.
 Probé, no me salió, y se me tildó mal el Android Studio.
 Ergo, toco en el XML y veo cómo queda en el Preview.
+
 
 
