@@ -347,7 +347,47 @@ Existe una cosa que es la Activity y otra que es el Context.
 Algunas cosas hay que pedírselas al Context.
 El context se puede obtener a partir de la activity: act.getBaseContext(). No sé por qué "base", tal vez puedan definirse distintos Context para la misma Activity, no tengo idea.
 
-Aparte de Activity y Context hay Application. Ni idea c'omo se usa / en qué interviene.
+Aparte de Activity y Context hay Application. Ni idea cómo se usa / en qué interviene.
+
+----------------------------
+Para poner un recuadro, hay que hacer dos cosas.
+1. Definirlo *aparte* en un archivo nuevo en res/drawable.
+   Va un ejemplo.
+
+   <shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle" >
+
+    <!-- View background color, 
+         con "transparent" se ve lo que queda abajo -->
+    <solid
+        android:color="@android:color/transparent" >
+    </solid>
+
+    <!-- View border color and width -->
+    <stroke
+        android:width="4dp"
+        android:color="@color/darkGreen" >
+    </stroke>
+
+    <!-- The radius makes the corners rounded -->
+    <corners
+        android:radius="8dp"   >
+    </corners>
+
+  </shape>
+
+2. Poner el nombre del archivo como valor del atributo android:background
+   del componente que se quiera recuadrar. P.ej. 
+        <TextView
+            ... muchos atributos ...
+            android:background="@drawable/simple_border"
+            ... más atributos ...
+        />
+
+No sé si se puede definir un padding en la definición del shape, o hay que ponerlo en el componente.
+
+Lo saqué de acá:
+https://stackoverflow.com/questions/3496269/how-do-i-put-a-border-around-an-android-textview
 
 
 

@@ -9,7 +9,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:context=".MenuInicial">
 
 
@@ -18,7 +18,7 @@
             android:id="@+id/titulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="40dp"
             android:text="@{controller.titulo}"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -30,7 +30,7 @@
             android:id="@+id/texto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="30dp"
             android:text="@{controller.texto}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@{controller.colorTexto}"
@@ -55,6 +55,7 @@
             app:layout_constraintTop_toBottomOf="@id/texto" />
 
         <LinearLayout
+            android:id="@+id/botonera"
             android:orientation="horizontal"
             android:gravity="center_horizontal"
             android:layout_width="match_parent"
@@ -84,5 +85,59 @@
                 app:layout_constraintLeft_toRightOf="@+id/aumentarLetra" />
 
         </LinearLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/botonera"
+            android:layout_marginTop="60dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:paddingTop="30dp"
+            android:paddingBottom="30dp"
+            android:background="@drawable/simple_border">
+
+            <TextView
+                android:id="@+id/tituloInfoSarmiento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tituloRecuadroCSarm"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@android:color/black"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textoSarmiento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{controller.textoActual}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="@android:color/holo_blue_dark"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tituloInfoSarmiento"
+                android:layout_marginTop="40dp"
+                tools:text="Texto sobre Capitán Sarmiento" />
+
+            <Button
+                android:id="@+id/cambiarTexto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{() -> controller.cambiarTexto()}"
+                android:text="@string/renovar_info"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="30dp"
+                app:layout_constraintTop_toBottomOf="@id/textoSarmiento"
+                />
+
+
+        </android.support.constraint.ConstraintLayout>
+
     </android.support.constraint.ConstraintLayout>
+
+
+
 </layout>
