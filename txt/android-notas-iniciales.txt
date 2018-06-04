@@ -133,6 +133,8 @@ La creación es copy-paste, el setContentView que se hacía a this ahora va a pa
 
 Después de crear el objeto binding, hay que setearle cada una de las referencias que se definió en el layout. Como definimos una referencia llamada controller, entonces a este objeto tenemos que hacerle setController.
 
+
+
 Etapa 3: agregamos botones
 ---------------------------------------------------------------------------
 
@@ -173,6 +175,8 @@ public void setTexto(String texto) {
 }
 
 El BR cumple una función similar al R, pero en este caso se acumulan las cosas que hemos usado como binding en nuestras vistas.
+
+
 
 Etapa 4: también se puede cambiar el estilo
 ---------------------------------------------------------------------------
@@ -223,6 +227,8 @@ public void aumentarLetra() {
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/ubicame" />
+
+
 
 Qué archivos hay en un proyecto Android.
 ----------------------------------------
