@@ -14,7 +14,7 @@ public class MenuInicial extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        controller = new MenuInicialController(this);
+            controller = new MenuInicialController(this);
         ActivityMenuInicialBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_menu_inicial);
         binding.setController(this.controller);
     }

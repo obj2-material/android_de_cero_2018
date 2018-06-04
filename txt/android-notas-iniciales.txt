@@ -147,6 +147,8 @@ implementation 'com.jakewharton.threetenabp:threetenabp:1.1.0'
 
 Solo hay que tener cuidado con una cosa: cuando usemos alguna de las clases de fecha, el Idea nos va a sugerir dos imports posibles, el de Java (que empieza con java.util) y el de la biblioteca que bajamos (que empieza con org.threeten.bp). Tenemos que elegir el último, ya que el primero solo está disponible para la última versión de Android.
 
+OJO hay que inicializar la librería en el onCreate de la Application (así es la vida).
+
 2.
 Ahora sí, agregamos el botón. Lo que vamos a hacer es que cuando se pulse cambie el texto por la fecha de hoy. Para eso, vamos a crear un método que haga justamente eso, e invocarlo desde el botón:
 
@@ -179,14 +181,25 @@ El BR cumple una función similar al R, pero en este caso se acumulan las cosas 
 
 
 Etapa 4: también se puede cambiar el estilo
----------------------------------------------------------------------------
+-------------------------------------------
 
 1.
 Hemos probado con el texto, pero ¿será posible modificar otros atributos programáticamente?
 
-La respuesta es que sí, solo hay que leer la documentación para saber qué tipo tienen estos atributos (que no siempre son los que suponemos, a veces usan tipos especiales de Android) y repetir lo que ya vimos antes: poner el binding en la vista, hacer un atributo en el controller, agregarle la annotation al getter, agregarle la línea mágica al setter.
+La respuesta es que sí, se pueden definir atributos (lo que en HTML sería el CSS) de los componentes visuales Android. Algunos ya se ven, p.ej. android:layout_width, android:layout_height, android:layout_marginTop, android:textAppearance.
+Notar de paso que el contenido de un componente también se define mediante un atributo, el android:text.
 
-Veamos un ejemplo, haciendo un botón que aumente la letra cada vez que se lo aprete:
+Solo hay que leer la documentación (y -acota Carlos- tener mucha paciencia) para saber qué tipo tienen estos atributos (que no siempre son los que suponemos, a veces usan tipos especiales de Android) y repetir lo que ya vimos antes: 
+- hacer un atributo en el controller, 
+- agregarle la annotation al getter, 
+- agregarle la línea mágica al setter, y
+- usar la nueva propiedad en la vista.
+
+Si quiero que el valor del atributo cambie como resultado de un evento, tengo que definir la acción que va a controlar el evento.
+
+
+Veamos un ejemplo, haciendo un botón que aumente la letra cada vez que se lo aprete.
+El atributo se llama android:textSize.
 
 // En el controller
 private int tamanioLetra = 50;
@@ -201,6 +214,7 @@ public void setTamanioLetra(int tamanioLetra) {
     this.notifyPropertyChanged(BR.tamanioLetra);
 }
 
+// acción para la acción de pulsado del botón "No se ve"
 public void aumentarLetra() {
     this.setTamanioLetra(this.tamanioLetra + 5);
 }
@@ -227,6 +241,76 @@ public void aumentarLetra() {
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/ubicame" />
+
+----------------------------
+
+Hasta acá todo fácil. 
+Pero ¡atenti! si lo que queremos cambiar es un color, se complica, porque hay que hacer una conversión (no entiendo por qué).
+Hay algunas "referencias a color" definidas en el archivo res/values/colors.xml. Se acceden mediante @color/xxx desde los XML, R.color.xxx en el Java. Notar que en Java se manejan como int, no como String.
+Peeeero estas "referencias a color" no son los colores posta. Por si esto fuera poco, para obtener el color posta a partir de la referencia debe intervenir el "contexto" donde está corriendo la Activity, que no sé bien qué es, pero se le puede pedir a las Activity mediante getBaseContext().
+Entooonces el Container tiene que conocer, o bien al contexto, o bien a la Activity. Ponele lo segundo: 
+        controller = new MenuInicialController(this);
+
+Así las cosas, para pasar de "referencia a color" a color hay que poner esta cosa horrible en el container:
+  ContextCompat.getColor(this.getActivity().getBaseContext(), ... la referencia al color ...)
+
+Lo de "ContextCompat" es porque estamos bancando una versión de API baja (la 19), cuya definición de Context parece estar deprecada o algo así.
+
+Para saber más sobre colores en Android:
+http://android4beginners.com/2013/06/appendix-b-everything-about-colors-in-android/
+
+
+
+Etapa 5: layouts anidados
+-------------------------
+Síiiii se pueden anidar layouts en la definición de una pantalla Android. 
+
+Un caso fácil: queremos una botonera horizontal, y además centrada. 
+
+Alcanza con incluir, dentro del ConstraintLayout, un LinearLayout, algo así:
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MenuInicial">
+
+        ... otros componentes, el último tiene esto
+                android:id="@+id/ubicame"
+        ...
+
+        <LinearLayout
+            android:orientation="horizontal"   
+            android:gravity="center_horizontal"     
+            android:layout_width="match_parent"     
+            android:layout_height="wrap_content"    
+            app:layout_constraintTop_toBottomOf="@+id/ubicame"
+            android:layout_marginTop="10dp">
+
+            ... los botones ...
+
+        </LinearLayout>
+
+        ... componentes que vayan debajo de la botonera ...
+
+    </android.support.constraint.ConstraintLayout>
+
+Comentarios sobre cada atributo del LinearLayout
+    android:orientation="horizontal"   
+        para dónde se despliega lo que pongamos adentro, opciones "horizontal" o "vertical"
+    android:gravity="center_horizontal"     
+        lo que esté adentro se va a acomodar centrado
+    android:layout_width="match_parent"     
+        toma todo el ancho del componente parent, en este caso toda la pantalla
+    android:layout_height="wrap_content"    
+        toma exactamente el alto necesario para que entre lo que pongamos adentro
+    app:layout_constraintTop_toBottomOf="@+id/ubicame"
+        que se ubique abajo del componente con ese id
+    android:layout_marginTop="10dp"
+        una pequeña separación
+
+
+Ver:
+https://developer.android.com/reference/android/widget/LinearLayout
+http://www.learn-android-easily.com/2013/05/nested-linear-layout-in-android.html
 
 
 
@@ -257,6 +341,16 @@ Keyboard shortcuts Android Studio
 
 
 
+Más comentarios sobre Android
+-----------------------------
+Existe una cosa que es la Activity y otra que es el Context. 
+Algunas cosas hay que pedírselas al Context.
+El context se puede obtener a partir de la activity: act.getBaseContext(). No sé por qué "base", tal vez puedan definirse distintos Context para la misma Activity, no tengo idea.
+
+Aparte de Activity y Context hay Application. Ni idea c'omo se usa / en qué interviene.
+
+
+
 Más comentarios sobre Android Studio
 ------------------------------------
 Si entiendo bien lo que dice en
@@ -264,3 +358,6 @@ Si entiendo bien lo que dice en
 se puede manejar el ConstraintLayout desde el preview, sin necesidad de tocar el XML.
 Probé, no me salió, y se me tildó mal el Android Studio.
 Ergo, toco en el XML y veo cómo queda en el Preview.
+
+
+
