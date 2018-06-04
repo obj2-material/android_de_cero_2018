@@ -2,16 +2,29 @@ package com.example.carlos.pruebas2018;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Year;
 import org.threeten.bp.format.DateTimeFormatter;
 
 public class MenuInicialController extends BaseObservable {
+    private AppCompatActivity activity;
+
     private String titulo = "Hola a todos";
     private String texto = "Estamos en el año " + Year.now().getValue();
     private int colorTexto = R.color.colorPrimary;
     private int tamanioLetra = 50;
+
+    public MenuInicialController(AppCompatActivity theActivity) {
+        super();
+        this.activity = theActivity;
+    }
+
+    public AppCompatActivity getActivity() {
+        return this.activity;
+    }
 
     @Bindable
     public int getTamanioLetra() {
@@ -25,7 +38,7 @@ public class MenuInicialController extends BaseObservable {
     public String getTexto() { return this.texto; }
 
     @Bindable
-    public int getColorTexto() { return this.colorTexto; }
+    public int getColorTexto() { return ContextCompat.getColor(this.getActivity().getBaseContext(), this.colorTexto); }
 
     public void setTexto(String texto) {
         this.texto = texto;
