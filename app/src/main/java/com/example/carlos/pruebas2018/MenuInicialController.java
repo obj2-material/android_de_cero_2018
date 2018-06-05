@@ -1,5 +1,6 @@
 package com.example.carlos.pruebas2018;
 
+import android.content.Intent;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.support.v4.content.ContextCompat;
@@ -96,5 +97,10 @@ public class MenuInicialController extends BaseObservable {
 
     public void aumentarLetra() {
         this.setTamanioLetra(this.tamanioLetra + 5);
+    }
+
+    public void mostrarInfoSarmiento() {
+        Intent intent = new Intent(this.getActivity().getBaseContext(), InfoSarmiento.class );
+        this.getActivity().getBaseContext().startActivity(intent);
     }
 }

@@ -314,6 +314,18 @@ http://www.learn-android-easily.com/2013/05/nested-linear-layout-in-android.html
 
 
 
+Etapa 6: dos actividades
+------------------------
+Recordemos:
+para cada pantalla que querramos tener en la aplicación, tenemos que definir una nueva actividad, que tiene tres componentes (análogo a Wicket)
+- .xml de definición de los componentes
+- clase que extiende AppCompatActivity
+- clase Controller, que debe extender de BaseObservable.
+
+Vale que dos actividades usen la misma clase de Controller. Para que usen la misma instancia ... no sé bien todavía cómo hacerlo bien.
+
+
+
 Qué archivos hay en un proyecto Android.
 ----------------------------------------
 app/manifests/AndroidManifest.xml
