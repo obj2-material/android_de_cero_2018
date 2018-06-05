@@ -21,20 +21,9 @@ public class MenuInicialController extends BaseObservable {
     private int colorTexto = R.color.colorPrimary;
     private int tamanioLetra = 50;
 
-    private List<String> textosRotativos = new ArrayList<>();
-    private int indiceTextosRotativos = 0;
-
     public MenuInicialController(AppCompatActivity theActivity) {
         super();
         this.activity = theActivity;
-        this.initTextosRotativos();
-    }
-
-    public void initTextosRotativos() {
-        this.textosRotativos.add("Capital Provincial de la Bandera");
-        this.textosRotativos.add("Población: 15000 hab.");
-        this.textosRotativos.add("Ciudades cercanas: Arrecifes, San Antonio de Areco");
-        this.indiceTextosRotativos = -1;
     }
 
     public AppCompatActivity getActivity() {
@@ -57,13 +46,6 @@ public class MenuInicialController extends BaseObservable {
         return ContextCompat.getColor(this.getActivity().getBaseContext(), this.colorTexto);
     }
 
-    @Bindable
-    public String getTextoActual() {
-        return this.indiceTextosRotativos == -1
-                ? ""
-                : this.textosRotativos.get(indiceTextosRotativos);
-    }
-
     public void setTexto(String texto) {
         this.texto = texto;
         this.notifyPropertyChanged(BR.texto);
@@ -81,14 +63,6 @@ public class MenuInicialController extends BaseObservable {
 
     public void mostrarFechaDeHoy() {
         this.setTexto("Hoy es " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-    }
-
-    public void cambiarTexto() {
-        this.indiceTextosRotativos++;
-        if (this.indiceTextosRotativos == this.textosRotativos.size()) {
-            this.indiceTextosRotativos = 0;
-        }
-        this.notifyPropertyChanged(BR.textoActual);
     }
 
     public void pintarDeRojo() {

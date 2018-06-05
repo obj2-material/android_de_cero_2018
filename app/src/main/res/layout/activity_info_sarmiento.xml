@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="controller" type="com.example.carlos.pruebas2018.MenuInicialController"/>
+        <variable name="controller" type="com.example.carlos.pruebas2018.InfoSarmientoController"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
