@@ -322,9 +322,55 @@ para cada pantalla que querramos tener en la aplicación, tenemos que definir un
 - clase que extiende AppCompatActivity
 - clase Controller, que debe extender de BaseObservable.
 
-Vale que dos actividades usen la misma clase de Controller. Para que usen la misma instancia ... no sé bien todavía cómo hacerlo bien.
+La clase que extiende AppCompatActivity es (al menos por ahora) muy cortita, tiene solamente este método
+    protected void onCreate(Bundle savedInstanceState) {
+        // 1.
+        // invocar al método de super pasándole el Bundle que llega por parámetro.
+        // no sé qué viene en este Bundle
+        super.onCreate(savedInstanceState);
+        // 2.
+        // inicializar el Controller, puede ser útil pasar la Activity
+        // como parámetro del constructor (p.ej. para obtener el Context).
+        controller = new InfoSarmientoController(this);
+        // 3.
+        // crear el binding. Eso se copia así derecho viejo, donde el nombre de la clase Binding, 
+        // y también el de la constante en R.layout, coinciden con el nombre del .xml.
+        // La clase ActivityInfoSarmientoBinding la crea automáticamente el AndroidStudio. 
+        // Si falta, tal vez haciendo Build -> Rebuild project se genere.
+        ActivityInfoSarmientoBinding binding = 
+            DataBindingUtil.setContentView(this, R.layout.activity_info_sarmientdo);
+        // 4.
+        // al binding recién creado le paso el controller
+        binding.setController(this.controller);
+        // fin, son cuatro cosas que hay que hacer en el onCreate de la Activity
+    }
+
+El .xml y el Controller se arman de acuerdo a lo que vimos con nuestra primer pantalla (y también a lo que vamos a ir viendo).
+
+-------------------------------------
+Dos actividades se enganchan ... como dos pantallas en Arena o dos páginas en Wicket: hay un evento que provoca que se salte de una a otra. P.ej., pulsar un botón. El código que sigue va en la acción que responde al evento (en el esquema que proponemos, un método en el Controller).
+
+Para saltar de una actividad a otra, intervienen una clase Intent, y el Context del que hablamos arriba, que le pedimos a la Activity. 
+Va un ejemplo de acción que hace un salto de Activity:
+
+    public void mostrarInfoSarmiento() {
+        // 1.
+        // se crea el Intent. El constructor lleva dos parámetros: el Context, y *la clase* 
+        // (atenti, la clase, no una instancia) de la Application a la que se quiere saltar
+        Intent intent = new Intent(this.getActivity().getBaseContext(), InfoSarmiento.class );
+        // 2.
+        // se arranca la nueva Activity, enviándole un mensaje al Context, como parámetro va
+        // el Intent que creamos recién.
+        this.getActivity().getBaseContext().startActivity(intent);
+    }
+
+Así es como dice Android que hay que hacer, así hacemos, y anda. Android sabe.
 
 
+
+---------------------------------------------------
+Anexos
+---------------------------------------------------
 
 Qué archivos hay en un proyecto Android.
 ----------------------------------------
