@@ -19,7 +19,7 @@ public class MenuInicial extends AppCompatActivity {
         ApplicationToolset.setContext(this.getApplicationContext());
 
         super.onCreate(savedInstanceState);
-        controller = new MenuInicialController();
+        controller = new MenuInicialController(this);
         ActivityMenuInicialBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_menu_inicial);
         binding.setController(this.controller);
     }
