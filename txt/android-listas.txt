@@ -1,0 +1,245 @@
+Manejo de listas en una aplicación Android
+==========================================
+
+Introducción
+------------
+Para que en una Activity aparezca una lista, agregamos un ListView.
+Repasemos los views que conocemos
+- TextView
+- Button
+- el nuevo: ListView
+
+En la definición de una lista, además del ListView que se agrega al layout, intervienen dos elementos adicionales
+1. un layout de fila: se pueden definir que en cada fila haya varios views. Ejemplos:
+    - dos TextView ordenados horizontalmente, el de arriba con un font más grande que el de abajo.
+    - un ImageView (que no vimos pero se imaginan qué muestra) a la izquierda con un TextView a la derecha.
+   La biblioteca de Android incluye varios layout de fila predefinidos, ver p.ej. 
+   https://docs.microsoft.com/en-us/xamarin/android/user-interface/layouts/list-view/customizing-appearance
+2. un Adapter, que es un objeto que debe implementar la interface android.widget.ListAdapter.
+   Otra vez, la biblioteca Android nos provee algunas implementaciones, que nos van a servir para casos sencillos.
+
+Por suerte, el enganche entre ListView y Adapter se puede hacer mediante un controller, usando data binding como hicimos en los ejemplos iniciales. Para eso el ListView tiene una property llamada android:adapter.
+
+
+
+Etapa 1: una pantalla con una lista de Strings
+----------------------------------------------
+Creamos un nuevo proyecto cuya actividad inicial va a mostrar una lista de Strings.
+Una vez que tenemos el proyecto creado, qué hay que hacer
+
+1. creamos la clase del controller con
+    - un constructor que recibe una Activity y se la guarda en un atributo (igual que los controller que hicimos para nuestra primer app)
+
+    - un método que devuelva una lista de Strings. 
+      En el ejemplo se supone que los números representan años, por eso llamamos a este método crearAnios().
+      Para "pasar" cada número de año a String, usamos String.valueOf(num).
+
+    - un método que crea y devuelve un nuevo Adapter. Va el código del ejemplo:
+        public ArrayAdapter<String> getListaAniosAdapter() {
+          return new ArrayAdapter<String>(
+            this.activity, 
+            android.R.layout.simple_list_item_1, 
+            this.crearAnios()
+          );
+      }
+      Usamos la clase ArrayAdapter, que viene con Android. Esta clase hay que parametrizarla con la clase del objeto que se va a renderizar en cada fila, en este caso String. El constructor que usamos (tiene varios, se pueden mirar) lleva tres parámetros
+        - el "contexto" donde se va a renderizar la lista, que es la Activity
+        - el id del layout que se usa para cada fila. 
+          En este caso usamos el más sencillo de los que vienen con Android, que muestra un solo TextView, el id es android.R.layout.simple_list_item_1.
+          De paso conocemos a android.R, que es una bolsa de constantes análoga a R, para acceder a recursos que provee Android. La interfaz R se refiere a recursos que definimos en la aplicación.
+        - la lista de Strings que hay que mostrar. Usamos el método que devuelve una lista de String, indicado en el punto anterior.
+
+
+2. En la clase de la Activity
+    - agregamos un atributo controller.
+
+    - definimos el método onCreate, igual que el de la activity principal del primer proyecto:
+      - invodfca al super
+      - crea el controller y lo asigna al atributo.
+      - crea el binding usando DataBindingUtil.setContentView, pasando por parámetro la activity y el layout de la activity.
+      - se setea el controller al binding recién creado.
+
+
+3. En el layout de la Activity
+    - agregamos un layout exterior, nos queda el ConstraintLayout adentro. Igual que en los layouts del primer proyecto.
+    - agregamos el tag data y adentro una variable con el tipo del controller. Otra vez, igual que en los layouts del primer proyecto.
+    - agregamos la ListView de esta forma:
+        <ListView
+            android:id="@+id/listaAnios"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adapter="@{controller.listaAniosAdapter}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+      Notar que el único atributo que no es general para todas las View es android:adapter.
+      En este caso, indicamos que le pida el adapter al Controller mediante la propiedad listaAniosAdapter, que va a matchear con el método getListaAniosAdapter().
+
+Listo, si hicimos todo bien, deberíamos poder probar que se abra una app que muestra una lista de números.
+
+---------
+Por favor
+---------
+En la prueba que haga cada uno, que los String tengan algún significado. En lo que sigue, se asume que es una lista de números de año.
+
+
+
+Etapa 2: agregamos objetos de negocio
+-------------------------------------
+El objetivo es que la lista, en lugar de mostrar una lista de Strings, muestre una lista de instancias de una clase Anio. Pongamos en esta clase, nombre y población, con sus getters, y un constructor al que se le pasan los dos valores, algo así:
+    public Anio(long _numero) {
+        this.numero = _numero
+    }
+
+Conviene que el controller tenga en un atributo la lista de años que hay que mostrar. Entonces pasamos de
+    public List<String> getAnios()
+a
+    public List<Anio> getAnios()
+
+¿Cómo se aviva el ArrayAdapter que a cada país hay que pedirle el nombre? No hay forma de decirle "mostrá esto". Si los objetos que recibe no son String, lo que se muestra es el resultado de toString(). Entonces, lo que hay que hacer es agregar este método en la clase Anio
+    public String toString() { return String.valueOf(this.numero()) }
+
+
+
+Etapa 3: acción ante un evento
+------------------------------
+Ahora hagamos que cuando se hace click sobre un año, aparezca un mensajito abajo que diga "El año <numero> es bisiesto" o "El año <numero> no es bisiesto".
+Para esto hay que agregarle al ListView, un listener para el evento "se hizo click sobre un ítem".
+
+Esto lo hacemos desde el onCreate de la Activity:
+    // agregamos un listener para cuando se hace click sobre una fila en el list view
+    // para esto me tenqo que conseguir una referencia al listView
+    ListView listaAnios = this.findViewById(R.id.listaAnios);
+    // y aqui vamos. ¡Se puede usar una función!!,
+    // análogo a lo en Wicket hacemos con una clase anónima.
+    listaAnios.setOnItemClickListener((listView, viewFilaClickeada, position, id) -> {
+        ... acá hacer lo que se desee ...
+    });
+
+Nótese que se puede pasar una función anónima (o "lambda expression"). La "forma larga" (lo que propone el editor del AndroidStudio) es así:
+    listaAnios.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> listView, View viewFilaClickeada, int position, long id) {
+
+        }
+    });
+
+Para que ande la "forma corta" hay que lograr que el proyecto tome características de Java 1.8, para eso agregar lo siguiente en el build.gradle de app.
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+
+Cualquiera de las dos formas sirve. Los parámetros son:
+- listView: el ListView enterito
+- viewFilaClickeada: eso, el View de la fila a la que se hizo click. El tipo de esto depende de cómo se haya configurado el Adapter. Como le pusimos android.R.layout.simple_list_item_1, entonces es un TextView.
+- position: la posición del ítem clickeado en la lista. Por lo que voy viendo, la posición se usa bastante en el manejo de listas.
+- id: honestamente, no sé qué es.
+
+OK, pero lo que queremos es el país. Por ahora se lo pedimos al controller; para esto nos sirve tener una referencia al controller desde la activity.
+        Pais paisClickeado = controller.getPais(position);
+... claro, para esto le tenemos que agregar el método getPais(int position) al controller ...
+
+Lo que vamos a hacer es que aparezca lo que en Android parecen llamar un Toast:
+    https://developer.android.com/guide/topics/ui/notifiers/toasts
+Este es una notificación que aparece abajo un ratito, y después se va sola. Ver los ejemplos en la página que acabo de referenciar.
+Al Toast hay que crearlo, y después hacerle show(). Va el código completo del listener: 
+    listaAnios.setOnItemClickListener((listView, viewFilaClickeada, position, id) -> {
+        Pais paisClickeado = controller.getPais(position);
+        String mensaje = ... lo que se vaya a mostrar a partir del país clickeado ...
+        Toast toast = Toast.makeText(this, mensaje, Toast.LENGTH_SHORT);
+        toast.show();
+    });
+
+los parámetros de Toast.makeText son: contexto (pasamos la activity), String a mostrar, una constante que dice si mostrarlo mucho o poco tiempo.
+
+
+Etapa 4: mostrar información que viene de un server
+---------------------------------------------------
+- requests por HTTP que devuelven algo que no es HTML, para pedir info que pueda ser consumida por otro programa.
+- formatos de intercambio de info: XML, JSON, YAML, etc..
+- Características de JSON.
+  - listas entre corchetes []
+  - objetos que sólo tienen atributos (sin métodos), entre llaves {}
+    cada atributo es "nombre": valor. El valor puede ser: String, número, booleano, null, una lista, un objeto.
+  - Ejemplo
+    [
+      {"titulo": "Caterva", "autores": ["Juan Filloy"], "anio": 1930},
+      {"titulo": "Madame Bovary", "autores": ["Gustave Flaubert"], "anio": 1848},
+      {"titulo": "Juan y María", "autores": ["Jorge Schussheim"], "anio": 1971},
+      {"titulo": "Design Patterns", "autores": ["Gamma", "Johnson", "Vlissides"], "anio": 2004}
+    ]
+    esto es una lista de cuatro objetos. Cada objeto tiene tres atributos. El valor del atributo autores es una lista de String.
+
+  - Librerías y packages que vamos a usar
+    - volley: nos permiten hacer la llamada HTTP. Ya tenemos la librería declarada en el build.gradle de app.
+      OJO que hay que usar un RequestQueue. Para esto definí la clase ApplicationToolbar, que se puede usar libremente en el siguiente TP.
+      Mirar la nota en 
+          https://developer.android.com/reference/android/app/Application.
+      También se puede crear una subclase de Application, que en el onCreate le setee el contexto al Toolset (lo de "toolset" es mío, se le puede cambiar el nombre, la idea es que por ahora solamente tiene que mantener un RequestQueue pero podrían agregarse más cosas).
+      Después de ver 
+          https://developer.android.com/training/volley/requestqueue
+      creo que como lo hice no está tan mal.
+    - org.json: modelo de un JSON
+      Este package viene con la librería básica de Android, no hace falta incorporar una librería.
+
+  - Uso de volley para obtener la info de un server: 
+    - crear un JsonArrayRequest o un JsonObjectRequest, según si lo que devuelve el server es una lista de objetos o un objeto.
+    - Parámetros del constructor de un JsonArrayRequest / JsonObjectRequest
+      - Request.Method.GET : por este cuatrimestre va fijo este valor.
+      - la URL.
+      - un objeto que representa parámetros adicionales. No lo vamos a usar, va null.
+      - Una función que se evalúa cuando vienen los valores.
+      - Una función que se evalúa si ocurre un error.
+    - La función que se evalúa cuando vienen los valores recibe un JSONArray
+      - con length averiguo cuántos elementos tiene el array, puedo hacer un for para acceder a los elementos secuencialmente.
+      - con getJSONObject(indice) obtengo el objeto que es el contenido de un elemento del array (si este contenido es un objeto JSON). Esto es una instancia de JSONObject.
+      - a un JSONObject le puedo pedir getString(nombre_atributo), getInt(nombre_atributo), etc..
+      - todos los get de JSONArray y JSONObject lanzan excepciones de las que hay que manejar. Conviene poner un try/catch afuera de todo el procesamiento.
+
+  - Pauta: definir un DataObject, una clase que defina los atributos que queremos guardarnos de cada objeto del JSONArray. Al Adapter del ListView le pasamos un List de estos DataObject. En el ejemplo es la clase Libro.
+
+  - ATENCION
+    El método que hace el pedido HTTP no *devuelve* la lista de DataObjects. La construye *cuando vienen los datos*, que es después que se piden, no sabemos cuándo. Por eso el método es void (y se llama "fetchXXX" en lugar de "getXXX").
+    Solamente después de que terminamos de procesar los datos que vinieron del server es que podemos agregar los DataObject en el Adapter.
+
+
+Recursos
+--------
+En general
+http://www.vogella.com/tutorials/AndroidListView/article.html
+mucha - mucha - mucha data, y hasta se entiende
+Peeeero no trabaja con data binding.
+
+Standard row layouts
+https://robgibbens.com/androids-built-in-list-item-layouts/
+https://docs.microsoft.com/en-us/xamarin/android/user-interface/layouts/list-view/customizing-appearance
+(cambiando a los nuevos nombres, claro)
+
+Toast
+https://developer.android.com/guide/topics/ui/notifiers/toasts
+
+Para agregar data a un View
+getTag() / setTag(Object) y variantes con key
+buscar en https://developer.android.com/reference/android/view/View
+
+SimpleAdapter
+https://developer.android.com/reference/android/widget/SimpleAdapter
+https://developer.android.com/reference/android/widget/SimpleAdapter.ViewBinder
+
+Sobre data binding en general
+https://www.captechconsulting.com/blogs/android-data-binding-tutorial
+
+
+
+Keyboard shortcuts Android Studio
+---------------------------------
+- Alt-Ins new
+- Ctrl-B saltar a definición.
+- Ctrl-N buscar clase.
+- Ctrl-Shift-N buscar archivo.
+- Alt-Left/Right salta entre los editores en el orden en que están.
+- Ctrl-Alt-O limpia los imports superfluos.
+- Ctrl-P muestra tipos de los parámetros (¡muy útil!).
