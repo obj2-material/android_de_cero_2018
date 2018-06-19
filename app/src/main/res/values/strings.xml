@@ -2,4 +2,6 @@
     <string name="app_name">Pruebas 2018</string>
     <string name="ubicame">Ubicame</string>
     <string name="no_veo">No veo nada che</string>
+    <string name="mostrarLista2020">Lista de años desde 2020</string>
+    <string name="mostrarLista2030">Lista de años desde 2030</string>
 </resources>

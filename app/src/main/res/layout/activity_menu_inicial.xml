@@ -53,6 +53,7 @@
             app:layout_constraintTop_toBottomOf="@id/texto" />
 
         <Button
+            android:id="@+id/agrandar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{() -> controller.aumentarLetra()}"
@@ -60,6 +61,36 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ubicame" />
+
+        <Button
+            android:id="@+id/mostrarLista2020"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mostrarLista2020"
+            android:onClick="@{() -> controller.mostrarListaDesde(2020)}"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/agrandar"/>
+
+        <Button
+            android:id="@+id/mostrarLista2030"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mostrarLista2030"
+            android:onClick="@{() -> controller.mostrarListaDesde(2030)}"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mostrarLista2020"/>
+
+        <Button
+            android:id="@+id/mostrarLibros"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Libros!!!"
+            android:onClick="@{() -> controller.mostrarListaDeLibros()}"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mostrarLista2030"/>
 
     </android.support.constraint.ConstraintLayout>
 </layout>
