@@ -21,6 +21,7 @@
         </activity>
         <activity android:name=".ListaDeAniosActivity" />
         <activity android:name=".ListaDeLibrosActivity" />
+        <activity android:name=".AnioActivity" />
     </application>
 
 </manifest>

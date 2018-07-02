@@ -1,5 +1,6 @@
 package com.example.carlos.pruebas2018;
 
+import android.content.Intent;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.support.v7.app.AppCompatActivity;
@@ -40,4 +41,10 @@ public class ListaDeAniosController extends BaseObservable {
     }
 
     public Anio getAnio(int position)  { return this.anios.get(position); }
+
+    public void mostrarAnio(int position) {
+        Intent saltoDeActivity = new Intent(this.activity, AnioActivity.class);
+        saltoDeActivity.putExtra("anio", this.getAnio(position));
+        this.activity.startActivity(saltoDeActivity);
+    }
 }

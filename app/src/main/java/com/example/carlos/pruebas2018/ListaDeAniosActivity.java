@@ -35,6 +35,16 @@ public class ListaDeAniosActivity extends AppCompatActivity {
 
         // un poco más corto
         listaDeAnios.setOnItemClickListener((listView, viewFila, position, elIdDeNoSeQue) -> {
+            this.controller.mostrarAnio(position);
+        });
+    }
+
+
+    private void agregarOnClickConToast() {
+        ListView listaDeAnios = this.findViewById(R.id.listaDeAnios);
+
+        // un poco más corto
+        listaDeAnios.setOnItemClickListener((listView, viewFila, position, elIdDeNoSeQue) -> {
             Anio anio = this.controller.getAnio(position);
 
             // El año 2018 no es bisiesto
@@ -54,8 +64,6 @@ public class ListaDeAniosActivity extends AppCompatActivity {
 //
 //            }
 //        });
-
     }
-
 
 }
