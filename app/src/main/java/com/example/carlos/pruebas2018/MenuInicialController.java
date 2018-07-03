@@ -61,4 +61,10 @@ public class MenuInicialController extends BaseObservable {
         Intent salto = new Intent(this.activity.getBaseContext(), ListaDeLibrosActivity.class);
         this.activity.getBaseContext().startActivity(salto);
     }
+
+    public void mostrarListaDeLibros2() {
+        Intent salto = new Intent(this.activity.getBaseContext(), ListaDeLibrosActivity2.class);
+        this.activity.getBaseContext().startActivity(salto);
+    }
+
 }

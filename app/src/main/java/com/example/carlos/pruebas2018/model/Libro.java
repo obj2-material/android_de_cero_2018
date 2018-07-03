@@ -16,6 +16,7 @@ public class Libro {
 
     public String getTitulo() { return this.titulo; }
     public int getAnio() { return this.anio; }
+    public String getAutor() { return this.autor; }
 
     public String toString() {
         return this.getTitulo() + " de " + this.autor + ", año " + this.getAnio();

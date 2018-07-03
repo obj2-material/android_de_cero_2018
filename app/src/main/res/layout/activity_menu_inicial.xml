@@ -92,5 +92,15 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mostrarLista2030"/>
 
+        <Button
+            android:id="@+id/mostrarLibros2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Libros!!! dos lineas"
+            android:onClick="@{() -> controller.mostrarListaDeLibros2()}"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mostrarLibros"/>
+
     </android.support.constraint.ConstraintLayout>
 </layout>
