@@ -40,7 +40,11 @@ public class ListaDeLibrosController extends BaseObservable {
         // para esto hay que saber cómo poner visible, o no, un view.
         // imagino que para esto está el atributo android:visibility, aunque nunca lo usé.
         this.librosAdapter.add("... obteniendo información ...");
-        this.fetchLibros();
+        this.fetchLibros();  // no devuelve, los va a buscar
+
+        // antes haciamos
+//        this.librosAdapter.addAll(this.getLibros());
+        // donde getLibros usa p.ej. un Store
     }
 
     public ListAdapter getLibrosAdapter() { return this.librosAdapter; }
@@ -61,15 +65,33 @@ public class ListaDeLibrosController extends BaseObservable {
     public void fetchLibros() {
 //        String url =  "https://restcountries.eu/rest/v2/region/americas";
         String url = "https://bibliography-card-app-zohafdyrxn.now.sh/books";
+
+        // request: pedido, response: respuesta
+
+        // va JsonArrayRequest porque la URL me devuelve una lista de objetos
+        // seria JsonObjectRequest si la URL me devolviera un objeto
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest
+            // el constructor lleva cinco parametros
             (
+                // primer parametro: siempre GET
                 Request.Method.GET,
+
+                // segundo parametro: la URL
                 url,
+
+                // tercer parametro: por ahora null
                 null,
+
+                // cuarto parametro (muy importante)
+                // la funcion que Volley va a ejecutar cuando llegue la info
+                // tecnicamente, cuando llegue la *respuesta* al pedido
                 (JSONArray response) -> {
+                    // paso 1: de la response a la lista que mantengo en el controller
                     this.procesarRespuestaDelServer(response);
+                    // paso 2: del controller al ArrayAdapter
                     this.llenarLibrosAdapter();
                 },
+
                 (VolleyError error) -> {
                     error.printStackTrace();
                     throw new RuntimeException("Error en el request REST", error);
@@ -90,7 +112,14 @@ public class ListaDeLibrosController extends BaseObservable {
                 // ... hago cosas con el libro ...
                 String titulo = libro.getString("title");
                 int anio = libro.getInt("year");
-                this.libros.add(new Libro(titulo, anio));
+
+                // los autores son una lista de String
+                JSONArray autores = libro.getJSONArray("authors");
+                String primerAutor = autores.getString(0);
+
+                // hasta aca obtuve la info a partir de la respuesta,
+                // a partir de aca hago lo que decido con esa info
+                this.libros.add(new Libro(titulo, anio, primerAutor));
             }
         } catch (JSONException error) {
             error.printStackTrace();
